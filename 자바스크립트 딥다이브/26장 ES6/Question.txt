@@ -1,0 +1,3 @@
+console.log는 값인가?
+
+함수 객체의 call , bind , apply

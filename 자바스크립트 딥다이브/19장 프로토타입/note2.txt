@@ -1,0 +1,26 @@
+
+>>
+프로토타입 취득 : Object.getPrototypeOf(obj)
+
+프로토타입 변경 : Object.setPrototypeOf(obj,newObj)
+
+
+>>
+일반 객체는 prototype 프로퍼티를 소유하지 않는다.
+함수 객체는 prototype 프로퍼티를 소유한다.
+
+코드 예 : 
+console.log(function () {}.hasOwnProperty("prototype"));
+console.log({}.hasOwnProperty("prototype"));
+
+
+>>
+prototype 프로퍼티는 생성자 함수가 생성할 객체의 프로토타입을 가리킨다.
+따라서 non-constructor 함수인 화살표 함수와 메서드 축약표현으로 정의한 메서드는
+prototype 프로퍼티를 가지지 못한다.
+
+
+>>
+constructor 프로퍼티 :
+prototype의 프로퍼티로 자신을 참조하고 있는 생성자함수를 가르킨다.
+인스턴스는 생성자함수.prototype.constructor를 물려받아 constructor 메서드를 사용할 수 있다.

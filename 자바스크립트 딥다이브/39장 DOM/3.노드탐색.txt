@@ -1,0 +1,18 @@
+요소 노드를 취득한 뒤 취득한 요소 노드를 기점으로 여러 노드를 탐색
+
+Node,Element 인터페이스는 트리 탐색 프로퍼티를 제공한다.
+- parentNode, previousSibling, firstChild, childNodes 프로퍼티는 Node.prototype이 제공
+- previousElementSibling , nextElementSibling과 children 프로퍼티는 Element.prototype이 제공 
+
+노드 탐색 프로퍼티는 모두 접근자 프로퍼티
+즉, 참조만 가능한 읽기 전용 접근자 프로퍼티이므로
+값을 할당할 수 없다.
+
+
+
+공백 텍스트 노드
+- html 요소 사이의 스페이스, 탭, 줄바꿈 등의 공백 문자는 
+텍스트 노드를 생성한다.
+
+
+

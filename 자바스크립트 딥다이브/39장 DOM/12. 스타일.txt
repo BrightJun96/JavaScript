@@ -1,0 +1,25 @@
+인라인 스타일 조작
+- HTMLElement.prototype.style 프로퍼티는 setter와 getter 모두 존재하는 접근자 프로퍼티로서
+요소 노드의 인라인 스타일을 취득하거나 추가 도는 변경한다.
+
+- style 프로퍼티를 참조하면 CSSStyleDeclaration 타입의 객체를 반환한다.
+
+- CSSStyleDeclaration 객체는 다양한 CSS 프로퍼티에 대응하는 프로퍼티를 가지고 있으며,
+이 프로퍼티에 값을 할당하면 해당 CSS 프로퍼티가 인라인 스타일로 HTML 요소에 추가되거나 변경된다.
+
+- CSS 프로퍼티는 케밥 케이스를 따른다.
+이에 대응하는 CSSStyleDeclaration 객체의 프로퍼티는 카멜 케이스를 따른다.
+
+
+
+
+
+
+* setter & getter
+setter 값을 변경할 수 있는 것
+
+getter 값을 참조만 할 수 있는 것
+
+
+* 케밥 케이스
+모든 단어가 소문자로 시작하고 단어와 단어 사이는 "-"로 연결된다.

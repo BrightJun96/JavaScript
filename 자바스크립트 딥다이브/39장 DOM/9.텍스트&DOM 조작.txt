@@ -1,0 +1,6 @@
+텍스트 조작
+- Node.prototype.textContent
+
+DOM 조작
+- Element.prototype.innerHTML
+- Element.prototype.insertAdjacentHTML
