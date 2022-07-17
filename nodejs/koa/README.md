@@ -364,6 +364,170 @@ post.delete("/", (ctx) => {
 
 위처럼 각 세부적인 경로별로 라우터를 형성하여 모듈화해주면 각 경로를 별 기능을 명확하게 명시할 수 있으며 유지보수하기에도 좋다.
 
+## 정적 파일 제공(koa-static)
+
+서버에 정적 파일을 제공하여 사용하기 위해서는 `koa-static`이라는 패키지를 설치하여 사용하여야한다.
+
+`npm install koa-static`
+
+```js
+const Koa = require("koa");
+const app = new Koa();
+app.use(require("koa-static")(root, opts));
+```
+
+정적파일을 제공하여 루트 디렉터리를 첫번째 인자로 할당하면 된다.
+그 뒤에 기본경로에 들어가게 되면 정적파일의 내용이 브라우저에 나타나게 된다.
+
+다음 코드를 살펴보자.
+
+- koa/src/main.js
+
+```js
+import Koa from "koa";
+import Router from "koa-router";
+import path from "path";
+import serve from "koa-static";
+const app = new Koa();
+const router = new Router();
+
+const port = 4000;
+
+router.get("/home", (ctx) => {
+  ctx.response.body = "home";
+});
+
+app.use(router.routes()).use(router.allowedMethods());
+
+const root = path.resolve(__dirname, "../public");
+console.log(root);
+app.use(serve(root));
+
+app.listen(port, () => {
+  console.log(`server is listening on port ${port}`);
+});
+```
+
+- koa/public/index.html
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Hello,html!</h1>
+  </body>
+</html>
+```
+
+- 파일 구조
+
+![img](%ED%8C%8C%EC%9D%BC%EA%B5%AC%EC%A1%B0.png)
+
+위와 같이 public내에 있는 index.html을 서버 홈 경로로 들어가게 됬을 때 보여주고 싶다.
+
+그렇다면 serve의 인자에 public 디렉터리를 할당해주면 된다.
+
+public 디렉터리는 src 디렉터리에서 벗어나 접근하여야 하기 때문에 path.resolve로 경로를 지정해주었다.
+
+위와 같이 지정해주면 서버의 홈 화면에 들어갔을 때 index.html의 내용을 볼 수 있다.
+
+![img](html%EC%A0%9C%EA%B3%B5%EC%84%B1%EA%B3%B5.png)
+
+## koa-send
+
+`npm install koa-send`
+
+정적파일을 제공해주는 패키지이다.
+
+특정 경로에 벗어났을 때 404가 뜨지않게 하며 정적파일을 제공할 수 있도록 할 때 사용할 수 있다.
+
+```js
+send(ctx, filename, { root: fileDirectory });
+```
+
+두 번째 인자로 파일명을 입력해주고 세 번째 인자로 객체를 할당하며 프로퍼티에 정적파일의 디렉터리 경로를 입력해주면 된다.
+
+```js
+import Koa from "koa";
+import Router from "koa-router";
+import path from "path";
+import serve from "koa-static";
+import send from "koa-send";
+const app = new Koa();
+const router = new Router();
+
+const port = 4000;
+
+router.get("/home", (ctx) => {
+  ctx.response.body = "home";
+});
+
+app.use(router.routes()).use(router.allowedMethods());
+
+const root = path.resolve(__dirname, "../public");
+
+app.use(serve(root));
+
+app.use(async (ctx) => {
+  if (ctx.status === 404 && ctx.path !== "/") {
+    await send(ctx, "index.html", { root });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`server is listening on port ${port}`);
+});
+```
+
+기본 경로에서 벗어나게 되면 404에러가 발생하며 페이지가 나오지 않는다.
+만약 사용자가 주소를 잘못 입력했을 경우에 그에 맞는 화면을 보여줘야한다.
+
+그러기 위해서 위처럼 404이거나 기본경로에서 벗어나게 되면 html을 보여주도록 할 수도 있다.
+
+기본경로에서 벗어나면 index.html을 보여주도록 하였는데 /home 경로로 가게 되면 home의 응답결과가 나온다.
+이는 router가 우선적으로 적용되어 해당 조건문보다 앞서기 때문이다.
+하지만 이는 코드의 순서가 중요하다.
+다음과 같이 코드의 순서를 변경하면 기본경로에서 벗어나 /home에 들어가도 index.html을 보여주게 된다.
+
+```js
+import Koa from "koa";
+import Router from "koa-router";
+import path from "path";
+import serve from "koa-static";
+import send from "koa-send";
+const app = new Koa();
+const router = new Router();
+
+const port = 4000;
+
+const root = path.resolve(__dirname, "../public");
+
+app.use(serve(root));
+
+app.use(async (ctx) => {
+  if (ctx.status === 404 && ctx.path !== "/") {
+    await send(ctx, "index.html", { root });
+  }
+});
+router.get("/home", (ctx) => {
+  ctx.response.body = "home";
+});
+
+app.use(router.routes()).use(router.allowedMethods());
+
+app.listen(port, () => {
+  console.log(`server is listening on port ${port}`);
+});
+```
+
+코드 순서를 바꾸면 라우터에 대한 미들웨어가 나중에 적용되니 라우터 코드를 우선적으로 적용해줘야한다.
+
 ## Reference
 
 - [koa 공식 홈페이지](https://koajs.com/)
